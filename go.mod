@@ -1,5 +1,7 @@
 module github.com/aghoneim92/cloudhome-api
 
+// +heroku goVersion 1.18
+
 go 1.18
 
 require (
