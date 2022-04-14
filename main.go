@@ -17,7 +17,7 @@ import (
 
 	bcrypt "golang.org/x/crypto/bcrypt"
 
-	"errors"
+	"encoding/base64"
 )
 
 func setupRouter(app *firebase.App) *gin.Engine {
@@ -119,11 +119,19 @@ func init() {
 }
 
 func main() {
-	if _, err := os.Stat("~/.secrets/firebase_config.json"); errors.Is(err, os.ErrNotExist) {
-		ErrorLogger.Println("firebase_config.json not found")
+	base64Str, found := os.LookupEnv("FIREBASE_CONFIG")
+	if !found {
+		ErrorLogger.Println("error getting firebase config")
 		return
 	}
-	app, err := firebase.NewApp(context.Background(), nil, option.WithCredentialsFile("~/.secrets/firebase_config.json"))
+
+	decoded, err := base64.StdEncoding.DecodeString(base64Str)
+
+	if err != nil {
+		ErrorLogger.Printf("error decoding firebase config: %v\n", err)
+		return
+	}
+	app, err := firebase.NewApp(context.Background(), nil, option.WithCredentialsJSON(decoded))
 	if err != nil {
 		ErrorLogger.Printf("error initializing app: %v\n", err)
 		return
