@@ -16,6 +16,8 @@ import (
 	"google.golang.org/api/option"
 
 	bcrypt "golang.org/x/crypto/bcrypt"
+
+	"errors"
 )
 
 func setupRouter(app *firebase.App) *gin.Engine {
@@ -117,6 +119,10 @@ func init() {
 }
 
 func main() {
+	if _, err := os.Stat("~/.secrets/firebase_config.json"); errors.Is(err, os.ErrNotExist) {
+		ErrorLogger.Println("firebase_config.json not found")
+		return
+	}
 	app, err := firebase.NewApp(context.Background(), nil, option.WithCredentialsFile("~/.secrets/firebase_config.json"))
 	if err != nil {
 		ErrorLogger.Printf("error initializing app: %v\n", err)
