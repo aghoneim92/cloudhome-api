@@ -133,7 +133,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	credentials, err := google.CredentialsFromJSON(context.Background(), decoded, "Firebase.FirestoreScope")
+	credentials, err := google.CredentialsFromJSON(
+		context.Background(),
+		decoded,
+		"https://www.googleapis.com/auth/firebase",
+		"https://www.googleapis.com/auth/cloud-platform",
+	)
 
 	if err != nil {
 		ErrorLogger.Printf("error getting firebase credentials: %v\n", err)
