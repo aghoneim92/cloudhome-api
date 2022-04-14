@@ -13,6 +13,7 @@ import (
 	firebase "firebase.google.com/go"
 
 	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 
 	bcrypt "golang.org/x/crypto/bcrypt"
 )
@@ -116,7 +117,7 @@ func init() {
 }
 
 func main() {
-	app, err := firebase.NewApp(context.Background(), nil)
+	app, err := firebase.NewApp(context.Background(), nil, option.WithCredentialsFile("~/.secrets/firebase_config.json"))
 	if err != nil {
 		ErrorLogger.Printf("error initializing app: %v\n", err)
 		return
