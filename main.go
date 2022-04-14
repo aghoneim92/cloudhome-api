@@ -16,6 +16,7 @@ import (
 	"google.golang.org/api/option"
 
 	bcrypt "golang.org/x/crypto/bcrypt"
+	"golang.org/x/oauth2/google"
 
 	"encoding/base64"
 )
@@ -119,22 +120,30 @@ func init() {
 }
 
 func main() {
-	base64Str, found := os.LookupEnv("FIREBASE_CONFIG")
+	base64Str, found := os.LookupEnv("FIREBASE_CONFIG_BASE64")
 	if !found {
 		ErrorLogger.Println("error getting firebase config")
-		return
+		os.Exit(1)
 	}
 
 	decoded, err := base64.StdEncoding.DecodeString(base64Str)
 
 	if err != nil {
 		ErrorLogger.Printf("error decoding firebase config: %v\n", err)
-		return
+		os.Exit(1)
 	}
-	app, err := firebase.NewApp(context.Background(), nil, option.WithCredentialsJSON(decoded))
+
+	credentials, err := google.CredentialsFromJSON(context.Background(), decoded, "Firebase.FirestoreScope")
+
+	if err != nil {
+		ErrorLogger.Printf("error getting firebase credentials: %v\n", err)
+		os.Exit(1)
+	}
+
+	app, err := firebase.NewApp(context.Background(), nil, option.WithCredentials(credentials))
 	if err != nil {
 		ErrorLogger.Printf("error initializing app: %v\n", err)
-		return
+		os.Exit(1)
 	}
 	r := setupRouter(app)
 	// Listen and Server in 0.0.0.0:8080
