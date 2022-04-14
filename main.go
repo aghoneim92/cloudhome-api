@@ -146,6 +146,17 @@ func main() {
 		os.Exit(1)
 	}
 	r := setupRouter(app)
-	// Listen and Server in 0.0.0.0:8080
-	r.Run(":8080")
+
+	port, found := os.LookupEnv("PORT")
+
+	if found {
+		port = ":" + port
+	} else {
+		port = ":8080"
+	}
+
+	if err := r.Run(port); err != nil {
+		ErrorLogger.Printf("error running server: %v\n", err)
+		os.Exit(1)
+	}
 }
