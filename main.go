@@ -78,7 +78,7 @@ func setupRouter(app *firebase.App) *gin.Engine {
 		}
 
 		if c.Bind(&json) == nil {
-			documents := firestore.Collection("devices").Where("id", "==", json.ClientId).Documents(context.Background())
+			documents := firestore.Collection("devices").Where("id", "==", json.Username).Documents(context.Background())
 			doc, err := documents.Next()
 
 			if err == iterator.Done {
